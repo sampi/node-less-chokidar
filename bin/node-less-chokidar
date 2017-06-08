@@ -1,0 +1,201 @@
+#!/usr/bin/env node
+
+const Emitter = require('events').EventEmitter;
+
+const chokidar = require('chokidar');
+const forEach = require('async-foreach').forEach;
+const path = require('path');
+const glob = require('glob');
+const util = require('util');
+const meow = require('meow');
+const fs = require('fs');
+const stdout = require('stdout-stream');
+
+const less = require('less');
+
+const cli = meow(
+	{
+		pkg: '../package.json',
+		help: [
+			'Usage:',
+			'  node-less-chokidar [options] <input.less>',
+			'',
+			'Example: Compile foobar.less to foobar.css',
+			'  node-less-chokidar --output-style compressed foobar.less > foobar.css',
+			'',
+			'Options',
+			'  -w, --watch                Watch a directory or file',
+			'  --help                     Print usage info'
+		].join('\n')
+	},
+	{
+		boolean: ['watch'],
+		alias: {
+			v: 'version',
+			w: 'watch'
+		},
+		default: {
+			quiet: false,
+			watch: false
+		}
+	}
+);
+
+const isDirectory = filePath => {
+	let isDir = false;
+	try {
+		const absolutePath = path.resolve(filePath);
+		isDir = fs.statSync(absolutePath).isDirectory();
+	} catch (e) {
+		isDir = e.code === 'ENOENT';
+	}
+	return isDir;
+};
+
+const getOptions = (args, options) => {
+	options.src = args[0];
+
+	if (args[1]) {
+		options.dest = path.resolve(args[1]);
+	} else if (options.output) {
+		options.dest = path.join(
+			path.dirname(options.src),
+			[path.basename(options.src, path.extname(options.src)), '.css'].join('')
+		); // replace ext.
+	}
+	return options;
+};
+
+const getEmitter = () => {
+	const emitter = new Emitter();
+
+	emitter.on('error', function(err) {
+		if (options.errorBell) {
+			err += '\x07';
+		}
+		console.error(err);
+		if (!options.watch) {
+			process.exit(1);
+		}
+	});
+
+	emitter.on('warn', function(data) {
+		console.warn(data);
+	});
+
+	emitter.on('log', stdout.write.bind(stdout));
+
+	return emitter;
+};
+
+const renderFile = (file, options, emitter, done) => {
+	options = getOptions([path.resolve(file)], options);
+	if (options.watch) {
+		emitter.emit('warn', util.format('=> changed: %s', file));
+	}
+	fs.readFile(file, 'utf8', (e, lessInput) => {
+		if (e) {
+			console.log('err', e);
+			emitter.emit('error', util.format('Error while accessing %s.', file));
+			throw new Error(e);
+		}
+		less
+			.render(lessInput, {
+				sourceMap: {},
+				paths: ['.', path.dirname(options.src)]
+			})
+			.then(output => {
+				fs.writeFileSync(options.dest, output.css);
+				fs.writeFileSync(`${options.dest}.map`, output.map);
+			})
+			.catch(err => {
+				if (err) {
+					console.log('err', err);
+				}
+			})
+			.then(done);
+	});
+};
+
+const renderDir = (options, emitter) => {
+	const globPath = path.resolve(options.directory, '**/*.less');
+	glob(globPath, { follow: true }, (err, files) => {
+		if (err) {
+			return emitter.emit(
+				'error',
+				util.format('You do not have permission to access this path: %s.', err.path)
+			);
+		} else if (!files.length) {
+			return emitter.emit('warn', 'No input files were found.');
+		}
+
+		forEach(
+			files,
+			function(subject) {
+				renderFile(subject, options, emitter, this.async());
+			},
+			(successful, arr) => {
+				const outputDir = path.join(process.cwd(), options.output);
+				emitter.emit('warn', util.format('Wrote %s CSS files to %s', arr.length, outputDir));
+				process.exit();
+			}
+		);
+	});
+};
+
+const watch = (options, emitter) => {
+	let paths;
+	if (options.directory) {
+		paths = path.resolve(options.directory, '**/*.less');
+	} else {
+		paths = options.src;
+	}
+
+	const watcher = chokidar.watch(paths);
+
+	watcher.on('error', function(error) {
+		emitter.emit.bind(emitter, 'error');
+	});
+
+	watcher.on('change', function(file) {
+		const files = [file];
+
+		/**
+		 * @TODO Make sure the dependency graph is respected
+		 */
+
+		files.forEach(function(file) {
+			if (path.basename(file)[0] !== '_') {
+				renderFile(file, options, emitter);
+			}
+		});
+	});
+};
+
+const run = (options, emitter) => {
+	if (!options.output || !isDirectory(options.output)) {
+		options.output = options.src;
+	}
+
+	if (options.watch) {
+		watch(options, emitter);
+	} else if (options.directory) {
+		renderDir(options, emitter);
+	} else {
+		renderFile(options.src, options, emitter);
+	}
+};
+
+// -----------------------------------------------------------------------------
+
+const options = getOptions(cli.input, cli.flags);
+const emitter = getEmitter();
+
+if (!options.src) {
+	emitter.emit('error', 'Provide a Less file to render');
+} else {
+	if (isDirectory(options.src)) {
+		options.directory = options.src;
+	}
+	run(options, emitter);
+}
