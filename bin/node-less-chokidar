@@ -26,7 +26,7 @@ const cli = meow(
 			'Options',
 			'  -w, --watch                Watch a directory or file',
 			'  --help                     Print usage info',
-			'  --paths                    Specify an include path'
+			'  --include-path             Add an include path'
 		].join('\n')
 	},
 	{
@@ -76,14 +76,14 @@ const getOptions = (args, options) => {
 const initializeOptions = (options) => {
 	// expand paths to include any passed in options
 	let paths = [];
-	if (options.paths) {
-		if (!Array.isArray(options.paths)) {
-			options.paths = [options.paths];
+	if (options.includePath) {
+		if (!Array.isArray(options.includePath)) {
+			options.includePath = [options.includePath];
 		}
 
 		// this approach copied from lessc
 		// https://github.com/less/less.js/blob/3.x/bin/lessc#L424
-		paths = paths.concat(options.paths.map(d => path.resolve(process.cwd(), d)));
+		paths = paths.concat(options.includePath.map(d => path.resolve(process.cwd(), d)));
 	}
 
 	// remove duplicate entries
