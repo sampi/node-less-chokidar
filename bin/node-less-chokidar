@@ -25,7 +25,8 @@ const cli = meow(
 			'',
 			'Options',
 			'  -w, --watch                Watch a directory or file',
-			'  --help                     Print usage info'
+			'  --help                     Print usage info',
+			'  --paths                    Specify an include path'
 		].join('\n')
 	},
 	{
@@ -63,8 +64,33 @@ const getOptions = (args, options) => {
 			[path.basename(options.src, path.extname(options.src)), '.css'].join('')
 		); // replace ext.
 	}
+
 	return options;
 };
+
+/**
+ * Called once when first creating options to ensure all necessary
+ * initial values are present. Adds the paths option, expanding from
+ * what is passed in on the command line
+ */
+const initializeOptions = (options) => {
+	// expand paths to include any passed in options
+	let paths = [];
+	if (options.paths) {
+		if (!Array.isArray(options.paths)) {
+			options.paths = [options.paths];
+		}
+
+		// this approach copied from lessc
+		// https://github.com/less/less.js/blob/3.x/bin/lessc#L424
+		paths = paths.concat(options.paths.map(d => path.resolve(process.cwd(), d)));
+	}
+
+	// remove duplicate entries
+	options.paths = paths.filter((d, i, a) => a.indexOf(d) === i);
+
+	return options;
+}
 
 const getEmitter = () => {
 	const emitter = new Emitter();
@@ -102,7 +128,7 @@ const renderFile = (file, options, emitter, done) => {
 		less
 			.render(lessInput, {
 				sourceMap: {},
-				paths: ['.', path.dirname(options.src)]
+				paths: ['.', path.dirname(options.src)].concat(options.paths)
 			})
 			.then(output => {
 				fs.writeFileSync(options.dest, output.css);
@@ -188,7 +214,7 @@ const run = (options, emitter) => {
 
 // -----------------------------------------------------------------------------
 
-const options = getOptions(cli.input, cli.flags);
+const options = initializeOptions(getOptions(cli.input, cli.flags));
 const emitter = getEmitter();
 
 if (!options.src) {
