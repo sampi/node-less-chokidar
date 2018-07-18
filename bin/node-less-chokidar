@@ -26,7 +26,8 @@ const cli = meow(
 			'Options',
 			'  -w, --watch                Watch a directory or file',
 			'  --help                     Print usage info',
-			'  --include-path             Add an include path'
+			'  --include-path             Add an include path',
+			"  --skip-source-map          Don't emit source map"
 		].join('\n')
 	},
 	{
@@ -125,14 +126,20 @@ const renderFile = (file, options, emitter, done) => {
 			emitter.emit('error', util.format('Error while accessing %s.', file));
 			throw new Error(e);
 		}
+		const lessOpts = {
+			paths: ['.', path.dirname(options.src)].concat(options.paths),
+			sourceMap: {}
+		};
+		if (options.skipSourceMap) {
+			delete lessOpts.sourceMap;
+		}
 		less
-			.render(lessInput, {
-				sourceMap: {},
-				paths: ['.', path.dirname(options.src)].concat(options.paths)
-			})
+			.render(lessInput, lessOpts)
 			.then(output => {
 				fs.writeFileSync(options.dest, output.css);
-				fs.writeFileSync(`${options.dest}.map`, output.map);
+				if (output.map) {
+					fs.writeFileSync(`${options.dest}.map`, output.map);
+				}
 			})
 			.catch(err => {
 				if (err) {
