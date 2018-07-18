@@ -19,8 +19,8 @@ I made this with [Create React App](https://github.com/facebookincubator/create-
     "watch-css": "node-less-chokidar src --watch"
 },
 "devDependencies": {
-    "node-less-chokidar": "^0.1.0",
-    "npm-run-all": "^4.0.2"
+    "node-less-chokidar": "^0.3.0",
+    "npm-run-all": "^4.1.3"
 }
 ```
 
