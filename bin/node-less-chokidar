@@ -14,31 +14,34 @@ const stdout = require('stdout-stream');
 const less = require('less');
 
 const cli = meow(
+	`
+	Usage
+		$ node-less-chokidar [options] <input.less>
+
+	Options
+		--help             Show this message
+		-w, --watch        Watch a directory or file
+		--include-path     Add an include path
+		--skip-source-map  Don't emit source map
+
+	Example: Watch ./src for changes and generate css files without sourcemaps
+		$ node-less-chokidar --skip-source-map --watch src
+`,
 	{
-		pkg: '../package.json',
-		help: [
-			'Usage:',
-			'  node-less-chokidar [options] <input.less>',
-			'',
-			'Example: Compile foobar.less to foobar.css',
-			'  node-less-chokidar foobar.less > foobar.css',
-			'',
-			'Options',
-			'  -w, --watch                Watch a directory or file',
-			'  --help                     Print usage info',
-			'  --include-path             Add an include path',
-			"  --skip-source-map          Don't emit source map"
-		].join('\n')
-	},
-	{
-		boolean: ['watch'],
-		alias: {
-			v: 'version',
-			w: 'watch'
-		},
-		default: {
-			quiet: false,
-			watch: false
+		booleanDefault: undefined,
+		flags: {
+			watch: {
+				type: 'boolean',
+				default: false,
+				alias: 'w'
+			},
+			includePath: {
+				type: 'string'
+			},
+			skipSourceMap: {
+				type: 'boolean',
+				default: false
+			}
 		}
 	}
 );
