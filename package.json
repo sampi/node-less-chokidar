@@ -1,32 +1,32 @@
 {
-  "name": "node-less-chokidar",
-  "version": "0.1.2",
-  "description": "",
-  "main": "bin/node-less-chokidar",
-  "bin": {
-    "node-less-chokidar": "bin/node-less-chokidar"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sampi/node-less-chokidar.git"
-  },
-  "author": "Daniel Spitzer <dsp@tradeshift.com> (https://github.com/sampi)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/sampi/node-less-chokidar/issues"
-  },
-  "homepage": "https://github.com/sampi/node-less-chokidar#readme",
-  "devDependencies": {},
-  "dependencies": {
-    "async-foreach": "^0.1.3",
-    "chokidar": "^1.7.0",
-    "get-stdin": "^5.0.1",
-    "glob": "^7.1.2",
-    "less": "^2.7.2",
-    "meow": "^3.7.0",
-    "stdout-stream": "^1.4.0"
-  }
+	"name": "node-less-chokidar",
+	"version": "0.1.2",
+	"description": "",
+	"main": "bin/node-less-chokidar",
+	"bin": {
+		"node-less-chokidar": "bin/node-less-chokidar"
+	},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/sampi/node-less-chokidar.git"
+	},
+	"author": "Daniel Spitzer <dsp@tradeshift.com> (https://github.com/sampi)",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/sampi/node-less-chokidar/issues"
+	},
+	"homepage": "https://github.com/sampi/node-less-chokidar#readme",
+	"devDependencies": {},
+	"dependencies": {
+		"async-foreach": "^0.1.3",
+		"chokidar": "^1.7.0",
+		"get-stdin": "^5.0.1",
+		"glob": "^7.1.2",
+		"less": "^2.7.2",
+		"meow": "^3.7.0",
+		"stdout-stream": "^1.4.0"
+	}
 }

@@ -74,7 +74,7 @@ const getOptions = (args, options) => {
  * initial values are present. Adds the paths option, expanding from
  * what is passed in on the command line
  */
-const initializeOptions = (options) => {
+const initializeOptions = options => {
 	// expand paths to include any passed in options
 	let paths = [];
 	if (options.includePath) {
@@ -84,14 +84,16 @@ const initializeOptions = (options) => {
 
 		// this approach copied from lessc
 		// https://github.com/less/less.js/blob/3.x/bin/lessc#L424
-		paths = paths.concat(options.includePath.map(d => path.resolve(process.cwd(), d)));
+		paths = paths.concat(
+			options.includePath.map(d => path.resolve(process.cwd(), d))
+		);
 	}
 
 	// remove duplicate entries
 	options.paths = paths.filter((d, i, a) => a.indexOf(d) === i);
 
 	return options;
-}
+};
 
 const getEmitter = () => {
 	const emitter = new Emitter();
@@ -156,7 +158,10 @@ const renderDir = (options, emitter) => {
 		if (err) {
 			return emitter.emit(
 				'error',
-				util.format('You do not have permission to access this path: %s.', err.path)
+				util.format(
+					'You do not have permission to access this path: %s.',
+					err.path
+				)
 			);
 		} else if (!files.length) {
 			return emitter.emit('warn', 'No input files were found.');
@@ -169,7 +174,10 @@ const renderDir = (options, emitter) => {
 			},
 			(successful, arr) => {
 				const outputDir = path.join(process.cwd(), options.output);
-				emitter.emit('warn', util.format('Wrote %s CSS files to %s', arr.length, outputDir));
+				emitter.emit(
+					'warn',
+					util.format('Wrote %s CSS files to %s', arr.length, outputDir)
+				);
 				process.exit();
 			}
 		);
