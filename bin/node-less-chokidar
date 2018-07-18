@@ -21,7 +21,7 @@ const cli = meow(
 			'  node-less-chokidar [options] <input.less>',
 			'',
 			'Example: Compile foobar.less to foobar.css',
-			'  node-less-chokidar --output-style compressed foobar.less > foobar.css',
+			'  node-less-chokidar foobar.less > foobar.css',
 			'',
 			'Options',
 			'  -w, --watch                Watch a directory or file',
