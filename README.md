@@ -1,5 +1,7 @@
 # node-less-chokidar
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/sampi/node-less-chokidar.svg)](https://greenkeeper.io/)
+
 ## HOWTO
 
 I made this with [Create React App](https://github.com/facebookincubator/create-react-app) in mind, put something similar in your `package.json`
