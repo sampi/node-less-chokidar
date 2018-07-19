@@ -22,3 +22,7 @@ node_modules/
 
 # IDE
 .idea
+
+# Test assets
+test/test.css
+test/test.css.map
