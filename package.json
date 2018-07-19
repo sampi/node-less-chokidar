@@ -7,7 +7,7 @@
 		"node-less-chokidar": "bin/node-less-chokidar"
 	},
 	"scripts": {
-		"test": "node-less-chokidar test/test.less && diff -q test/test-expect.css test/test.css",
+		"test": "node bin/node-less-chokidar test/test.less && diff -q test/test-expect.css test/test.css",
 		"travis-deploy-once": "travis-deploy-once",
 		"semantic-release": "semantic-release"
 	},
