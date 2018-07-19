@@ -1,5 +1,10 @@
 # node-less-chokidar
 
+[![travis](https://travis-ci.org/sampi/node-less-chokidar.svg?branch=master)](https://travis-ci.org/sampi/node-less-chokidar)
+[![npm](https://img.shields.io/npm/v/node-less-chokidar.svg)](https://npmjs.org/package/node-less-chokidar)
+
+Compile `.less` into `.css` and watch for file changes!
+
 ## HOWTO
 
 I made this with [Create React App](https://github.com/facebookincubator/create-react-app) in mind, put something similar in your `package.json`
