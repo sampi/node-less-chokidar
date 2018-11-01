@@ -134,7 +134,7 @@ const renderFile = (file, options, emitter, done) => {
 		const lessOpts = {
 			paths: ['.', path.dirname(options.src)].concat(options.paths),
 			sourceMap: {},
-			javascriptEnabled: true
+			javascriptEnabled: !!options.js
 		};
 		if (options.skipSourceMap) {
 			delete lessOpts.sourceMap;
