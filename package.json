@@ -23,7 +23,7 @@
 	"homepage": "https://github.com/sampi/node-less-chokidar#readme",
 	"devDependencies": {
 		"travis-deploy-once": "^5.0.1",
-		"semantic-release": "^15.8.1"
+		"semantic-release": "^17.2.3"
 	},
 	"dependencies": {
 		"async-foreach": "^0.1.3",
